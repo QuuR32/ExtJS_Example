@@ -1,3 +1,6 @@
+const AJAX_BASE_URL = 'http://atelierlibre.url.ph/app/JavascriptComponents_WS/';
+//const AJAX_BASE_URL = '/JavascriptComponents_WS/';
+
 // Creation of data model
 Ext.define('MyApp.model.News', {
 	extend : 'Ext.data.Model',
@@ -17,50 +20,24 @@ Ext.define('MyApp.model.News', {
 });
 
 Ext.onReady(function() {
-	let panel1 = Ext.create('Ext.Panel', {
-		height : 100,
-		width : 200,
-		title : 'Insider 1',
-		html : 'Je suis dedans'
-	});
-	let panel2 = Ext.create('Ext.Panel', {
-		height : 100,
-		width : 200,
-		title : 'Insider 2',
-		html : 'Je suis dedans',
-		style : {
-			borderColor : 'red'
-		},
-	});
-
-	let panel0 = Ext.create('Ext.panel.Panel', {
-		layout : 'accordion',
-		renderTo : 'helloWorldPanel',
-		height : 200,
-		width : 400,
-		title : 'Outsider',
-		items : [ panel1, panel2 ]
-	});
-	
-	var gridStore = null;
-	
 	Ext.Ajax.request({
-	    url: '/JavascriptComponents_WS/news.php',
+	    url: AJAX_BASE_URL + 'news.php',
 	    method: 'POST',          
 	    params: {
 	    		m : 'all'
 	    },
-	    success: function(result){
-	        let data = Ext.Array.map(Ext.util.JSON.decode(result.responseText)['root'], function (news) {
-	            	return {
-		    			ID: news.ID,
-		    			Titre: news.Titre,
-		    			Contenu: news.Contenu,
-		    			Date: news.Date
+	    contentType: "application/json; charset=utf-8",
+	    success: function(result) {
+	        let data = Ext.Array.map(Ext.util.JSON.decode(result.responseText), function (news) {
+	        		return {
+		    			ID: news.news.ID,
+		    			Titre: news.news.Titre,
+		    			Contenu: news.news.Contenu,
+		    			Date: news.news.Date
 	    			};
 	    		});
 	        
-		    	gridStore = Ext.create('Ext.data.Store', {
+		    	let gridStore = Ext.create('Ext.data.Store', {
 		    		model : 'MyApp.model.News',
 		    		data : data
 		    	});
@@ -99,37 +76,36 @@ function populateGrid(grid) {
 		id : 'gridId',
 		store : grid,
 		stripeRows : true,
-		title : 'News Grid', // Title for the grid
-		renderTo : 'gridDiv', // Div id where the grid has to be rendered
-		width : '100%',
-		collapsible : true, // property to collapse grid
-		enableColumnMove : true, // property which allows column to move to different position by dragging that column.
-		enableColumnResize : true, // property which allows to resize column run time.
+		title : 'News',
+		renderTo : 'gridDiv',
+		width : '80%',
+		collapsible : true,
+		enableColumnMove : true,
+		enableColumnResize : true,
 
 		columns : [
-				{
-					header : "Titre",
-					dataIndex : 'Titre',
-					id : 'ID',
-					flex : .5, // property defines the amount of space this column is going to take in the grid container with respect to all.	
-					sortable : true, // property to sort grid column data. 
-					hideable : false
-				// property which allows column to be hidden run time on user request.
-				},
-				{
-					header : "Contenu",
-					dataIndex : 'Contenu',
-					flex : 1,
-					sortable : true,
-					hideable : true
-				// this column will not be available to be hidden.
-				},
-				{
-					header : "Date",
-					dataIndex : 'Date',
-					flex : .3,
-					sortable : true,
-					hideable : true
-				} ]
+			{
+				header : "Titre",
+				dataIndex : 'Titre',
+				id : 'ID',
+				flex : .5,
+				sortable : true,
+				hideable : false
+			},
+			{
+				header : "Contenu",
+				dataIndex : 'Contenu',
+				flex : 1,
+				sortable : true,
+				hideable : true
+			},
+			{
+				header : "Date",
+				dataIndex : 'Date',
+				flex : .3,
+				sortable : true,
+				hideable : true,
+				align: 'right'
+			} ]
 	});
 }
