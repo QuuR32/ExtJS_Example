@@ -51,17 +51,15 @@ Ext.onReady(function() {
 	    		m : 'all'
 	    },
 	    success: function(result){
-	        console.dir(Ext.util.JSON.decode(result.responseText)['root']);
-	        let dataResult = Ext.util.JSON.decode(result.responseText)['root'];
-	        let data = new Array;
-	        for(let i = 0; i < dataResult.length; i++) {
-	        		data.push({
-	        			ID: dataResult[i].news.ID,
-	        			Titre: dataResult[i].news.Titre,
-	        			Contenu: dataResult[i].news.Contenu,
-	        			Date: dataResult[i].news.Date
-	        		});
-	        	}
+	        let data = Ext.Array.map(Ext.util.JSON.decode(result.responseText)['root'], function (news) {
+	            	return {
+		    			ID: news.ID,
+		    			Titre: news.Titre,
+		    			Contenu: news.Contenu,
+		    			Date: news.Date
+	    			};
+	    		});
+	        
 		    	gridStore = Ext.create('Ext.data.Store', {
 		    		model : 'MyApp.model.News',
 		    		data : data
